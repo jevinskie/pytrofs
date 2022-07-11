@@ -70,7 +70,7 @@ def create(archive, directory):
         for file in Path(directory).walk():
             print(f"file: {file}")
             print(f"parent: {file.parent}")
-            parent = file.parent.removeprefix(directory + "/")
+            parent = file.parent.removeprefix(directory)
             print(f"parent: {parent}")
             toc = file.name.encode("utf-8") + b" "
             if file.isfile():
