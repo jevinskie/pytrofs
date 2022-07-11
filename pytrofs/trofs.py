@@ -67,6 +67,9 @@ def create(archive, directory):
         ar.write(b"\x1a")
 
         tocs = {}
+        dir_parents = {}
+        file_sz = {}
+        file_off = {}
         for file in Path(directory).walk():
             # print(f"file: {file}")
             # print(f"parent: {file.parent}")
@@ -75,19 +78,26 @@ def create(archive, directory):
             # print(f"parent: {parent}")
             toc = file.name.encode("utf-8") + b" "
             if file.isfile():
-                off = ar.tell()
                 sz = file.size
+                off = ar.tell()
+                file_sz[trunc_path] = sz
+                file_off[trunc_path] = off
                 rbuf = file.read_bytes()
                 assert len(rbuf) == sz
                 ar.write(rbuf)
-                toc += f"{{F {sz} {off}}}".encode("utf-8")
+                toc += b"{F}"
             elif file.islink():
                 tgt = file.readlink().encode("utf-8")
                 toc += b"{L " + tgt + b"}"
             elif file.isdir():
+                if "tcl8.6" in file:
+                    print(f"file: {file}")
                 toc += b"{D}"
                 if trunc_path not in tocs:
                     tocs[trunc_path] = []
+                else:
+                    raise KeyError("supposed to happen?")
+                dir_parents[trunc_path] = parent
             else:
                 raise ValueError(f"File type not supported {file}")
             if parent in tocs:
@@ -101,20 +111,31 @@ def create(archive, directory):
         tocs_sz = {}
         tocs_off = {}
         for path, toc in reversed(tocs_walked.items()):
+            toc_off = ar.tell()
             tocs_updated = []
             for e in toc:
-                if e.endswith(b" {D}"):
-                    d = path + "/" + e[:-4].decode("utf-8")
+                p = path + "/" + e[:-4].decode("utf-8")
+                if p == "/tcl8.6":
+                    print(f'path: "{path}" p: {p}')
+                    print(f"orig e: {e}")
+                    print(f"tocs_walked: {tocs_walked}")
+                    print(f"tocs_off: {tocs_off}")
+                if e.endswith(b" {F}"):
+                    e = e.removesuffix(b"}")
+                    off = toc_off - file_off[p]
+                    e += f" {file_sz[p]} {off}}}".encode("utf-8")
+                    # print(e)
+                elif e.endswith(b" {D}"):
                     e = e.removesuffix(b"}")
                     # print(f"d: {d} tocs_sz: {tocs_sz} tocs_off: {tocs_off}")
-                    e += f" {tocs_sz[d]} {tocs_off[d]}}}".encode("utf-8")
+                    e += f" {tocs_sz[p]} {toc_off}}}".encode("utf-8")
                     # print(e)
-                    tocs_updated.append(e)
                 else:
-                    tocs_updated.append(e)
+                    pass
+                tocs_updated.append(e)
             toc_buf = b" ".join(tocs_updated)
             tocs_sz[path] = len(toc_buf)
-            tocs_off[path] = ar.tell()
+            tocs_off[path] = toc_off
             ar.write(toc_buf)
 
         # print(tocs)
