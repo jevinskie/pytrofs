@@ -70,6 +70,7 @@ def create(archive, directory):
         for file in Path(directory).walk():
             # print(f"file: {file}")
             # print(f"parent: {file.parent}")
+            trunc_path = file.removeprefix(directory)
             parent = file.parent.removeprefix(directory)
             # print(f"parent: {parent}")
             toc = file.name.encode("utf-8") + b" "
@@ -85,6 +86,8 @@ def create(archive, directory):
                 toc += b"{L " + tgt + b"}"
             elif file.isdir():
                 toc += b"{D}"
+                if trunc_path not in tocs:
+                    tocs[trunc_path] = []
             else:
                 raise ValueError(f"File type not supported {file}")
             if parent in tocs:
