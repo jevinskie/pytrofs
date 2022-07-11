@@ -68,10 +68,10 @@ def create(archive, directory):
 
         tocs = {}
         for file in Path(directory).walk():
-            print(f"file: {file}")
-            print(f"parent: {file.parent}")
+            # print(f"file: {file}")
+            # print(f"parent: {file.parent}")
             parent = file.parent.removeprefix(directory)
-            print(f"parent: {parent}")
+            # print(f"parent: {parent}")
             toc = file.name.encode("utf-8") + b" "
             if file.isfile():
                 off = ar.tell()
@@ -92,8 +92,30 @@ def create(archive, directory):
             else:
                 tocs[parent] = [toc]
 
-        print(tocs)
+        # print(tocs)
 
-        root_toc_buf = b""
+        tocs_walked = tocs
+        tocs_sz = {}
+        tocs_off = {}
+        for path, toc in reversed(tocs_walked.items()):
+            tocs_updated = []
+            for e in toc:
+                if e.endswith(b" {D}"):
+                    d = path + "/" + e[:-4].decode("utf-8")
+                    e = e.removesuffix(b"}")
+                    # print(f"d: {d} tocs_sz: {tocs_sz} tocs_off: {tocs_off}")
+                    e += f" {tocs_sz[d]} {tocs_off[d]}}}".encode("utf-8")
+                    # print(e)
+                    tocs_updated.append(e)
+                else:
+                    tocs_updated.append(e)
+            toc_buf = b" ".join(tocs_updated)
+            tocs_sz[path] = len(toc_buf)
+            tocs_off[path] = ar.tell()
+            ar.write(toc_buf)
+
+        # print(tocs)
+
+        root_toc_sz = tocs_sz[""]
         ar.write(b"\x1atrofs01")
-        ar.write(len(root_toc_buf).to_bytes(4, "big"))
+        ar.write(root_toc_sz.to_bytes(4, "big"))
