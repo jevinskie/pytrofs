@@ -2,6 +2,8 @@ import io
 import os
 import re
 
+from path import Path
+
 # https://wiki.tcl-lang.org/page/trofs
 
 # assume ' ', '{', '}' are not in paths
@@ -60,4 +62,38 @@ def extract(archive, directory):
 
 
 def create(archive, directory):
-    print(f"create ar: {archive} dir: {directory}")
+    directory = Path(directory).normpath()
+    with open(archive, "wb") as ar:
+        ar.write(b"\x1a")
+
+        tocs = {}
+        for file in Path(directory).walk():
+            print(f"file: {file}")
+            print(f"parent: {file.parent}")
+            parent = file.parent.removeprefix(directory + "/")
+            print(f"parent: {parent}")
+            toc = file.name.encode("utf-8") + b" "
+            if file.isfile():
+                off = ar.tell()
+                sz = file.size
+                rbuf = file.read_bytes()
+                assert len(rbuf) == sz
+                ar.write(rbuf)
+                toc += f"{{F {sz} {off}}}".encode("utf-8")
+            elif file.islink():
+                tgt = file.readlink().encode("utf-8")
+                toc += b"{L " + tgt + b"}"
+            elif file.isdir():
+                toc += b"{D}"
+            else:
+                raise ValueError(f"File type not supported {file}")
+            if parent in tocs:
+                tocs[parent].append(toc)
+            else:
+                tocs[parent] = [toc]
+
+        print(tocs)
+
+        root_toc_buf = b""
+        ar.write(b"\x1atrofs01")
+        ar.write(len(root_toc_buf).to_bytes(4, "big"))
