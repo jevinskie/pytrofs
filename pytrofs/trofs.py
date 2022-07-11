@@ -67,15 +67,14 @@ def create(archive, directory):
         ar.write(b"\x1a")
 
         tocs = {}
+        # ordered dictionary hack since path doesn't return root dir first
+        tocs[""] = []
         dir_parents = {}
         file_sz = {}
         file_off = {}
         for file in Path(directory).walk():
-            # print(f"file: {file}")
-            # print(f"parent: {file.parent}")
             trunc_path = file.removeprefix(directory)
             parent = file.parent.removeprefix(directory)
-            # print(f"parent: {parent}")
             toc = file.name.encode("utf-8") + b" "
             if file.isfile():
                 sz = file.size
@@ -90,8 +89,6 @@ def create(archive, directory):
                 tgt = file.readlink().encode("utf-8")
                 toc += b"{L " + tgt + b"}"
             elif file.isdir():
-                if "tcl8.6" in file:
-                    print(f"file: {file}")
                 toc += b"{D}"
                 if trunc_path not in tocs:
                     tocs[trunc_path] = []
@@ -105,8 +102,6 @@ def create(archive, directory):
             else:
                 tocs[parent] = [toc]
 
-        # print(tocs)
-
         tocs_walked = tocs
         tocs_sz = {}
         tocs_off = {}
@@ -115,21 +110,14 @@ def create(archive, directory):
             tocs_updated = []
             for e in toc:
                 p = path + "/" + e[:-4].decode("utf-8")
-                if p == "/tcl8.6":
-                    print(f'path: "{path}" p: {p}')
-                    print(f"orig e: {e}")
-                    print(f"tocs_walked: {tocs_walked}")
-                    print(f"tocs_off: {tocs_off}")
                 if e.endswith(b" {F}"):
                     e = e.removesuffix(b"}")
                     off = toc_off - file_off[p]
                     e += f" {file_sz[p]} {off}}}".encode("utf-8")
-                    # print(e)
                 elif e.endswith(b" {D}"):
                     e = e.removesuffix(b"}")
-                    # print(f"d: {d} tocs_sz: {tocs_sz} tocs_off: {tocs_off}")
-                    e += f" {tocs_sz[p]} {toc_off}}}".encode("utf-8")
-                    # print(e)
+                    off = toc_off - tocs_off[p]
+                    e += f" {tocs_sz[p]} {off}}}".encode("utf-8")
                 else:
                     pass
                 tocs_updated.append(e)
@@ -137,8 +125,6 @@ def create(archive, directory):
             tocs_sz[path] = len(toc_buf)
             tocs_off[path] = toc_off
             ar.write(toc_buf)
-
-        # print(tocs)
 
         root_toc_sz = tocs_sz[""]
         ar.write(b"\x1atrofs01")
