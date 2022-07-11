@@ -6,7 +6,6 @@ from pytrofs import trofs
 
 
 def real_main(args):
-    print(args)
     if args.extract:
         trofs.extract(args.trofs, args.directory)
     elif args.create:
