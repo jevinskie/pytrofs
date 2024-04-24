@@ -1,3 +1,17 @@
-pytrofs.egg-info/
+# JetBrains
+**/.idea/
+
+# macOS
+**/.DS_Store
+
+# VS Code
+**/.vscode/
+**/.vscode-ctags
+
+# Python
+**/.mypy_cache/
+**/.ruff_cache/
 **/__pycache__/
-dist/
+**/*.egg-info/
+**/*.pyc
+/dist/

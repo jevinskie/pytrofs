@@ -8,7 +8,7 @@ from path import Path
 
 # assume ' ', '{', '}' are not in paths
 _toc_re = re.compile(
-    b"(?P<name>[^ {}]+) {((?P<ty>F|D) (?P<sz>\d+) (?P<off>\d+)|L (?P<tgt>[^ {}]+))}(?: )?"
+    rb"(?P<name>[^ {}]+) {((?P<ty>F|D) (?P<sz>\d+) (?P<off>\d+)|L (?P<tgt>[^ {}]+))}(?: )?"
 )
 
 
@@ -113,11 +113,11 @@ def create(archive, directory):
                 if e.endswith(b" {F}"):
                     e = e.removesuffix(b"}")
                     off = toc_off - file_off[p]
-                    e += f" {file_sz[p]} {off}}}".encode("utf-8")
+                    e += f" {file_sz[p]} {off}}}".encode()
                 elif e.endswith(b" {D}"):
                     e = e.removesuffix(b"}")
                     off = toc_off - tocs_off[p]
-                    e += f" {tocs_sz[p]} {off}}}".encode("utf-8")
+                    e += f" {tocs_sz[p]} {off}}}".encode()
                 else:
                     pass
                 tocs_updated.append(e)
