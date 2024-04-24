@@ -1,0 +1,51 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=69.5", "setuptools-scm>=8.0"]
+
+[project]
+authors = [
+  {name = "Jevin Sweval", email = "jevinsweval@gmail.com"}
+]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11"
+]
+dependencies = [
+  "attrs>=23.2.0",
+  "packaging>=23.2",
+  "path>=16.14.0",
+  "rich>=13.7.0"
+]
+description = "Python implementation of Tcl's trofs (Tcl Read-Only FileSystem)"
+dynamic = [
+  "version"
+]
+keywords = [
+  "tcl",
+  "trofs",
+  "archive",
+  "archiver",
+  "unarchiver"
+]
+license = {text = "BSD-2-Clause"}
+name = "pytrofs"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.11"
+
+[project.scripts]
+pytrofs-util = "pytrofs.tools.pytrofs_util:main"
+
+[project.urls]
+repository = "https://github.com/jevinskie/pytrofs"
+
+[tool.mypy]
+strict = true
+
+[tool.setuptools]
+zip-safe = true
+
+[tool.setuptools.dynamic]
+version = {attr = "pytrofs._version.__version__"}
+
+[tool.setuptools_scm]
+version_file = "pytrofs/_version.py"
