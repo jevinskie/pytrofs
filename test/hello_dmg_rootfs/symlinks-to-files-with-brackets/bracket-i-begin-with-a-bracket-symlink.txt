@@ -1,0 +1,1 @@
+../files-with-brackets/{-i-begin-with-a-bracket.txt

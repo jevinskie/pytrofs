@@ -50,7 +50,7 @@ repos:
   hooks:
   - id: mypy
     args: [--strict]
-    additional_dependencies: [attrs>=23.2.0, packaging>=23.2, path>=16.14.0, rich>=13.7.0]
+    additional_dependencies: [attrs>=23.2.0, lark>=1.1.9, packaging>=23.2, path>=16.14.0, rich>=13.7.0]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.6.0

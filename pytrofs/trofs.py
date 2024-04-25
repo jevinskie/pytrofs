@@ -11,8 +11,8 @@ from path import Path
 
 TOCDict = dict[Path, "TOCDict"]
 
-trofs_signature: Final[bytes] = b"\x1atrofs01"
-trofs_footer_sz: Final[int] = len(trofs_signature) + 4
+trofs_signature: Final = b"\x1atrofs01"
+trofs_footer_sz: Final = len(trofs_signature) + 4
 
 
 class DirEntType(Enum):

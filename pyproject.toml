@@ -14,7 +14,8 @@ dependencies = [
   "attrs>=23.2.0",
   "packaging>=23.2",
   "path>=16.14.0",
-  "rich>=13.7.0"
+  "rich>=13.7.0",
+  "lark>=1.1.9"
 ]
 description = "Python implementation of Tcl's trofs (Tcl Read-Only FileSystem)"
 dynamic = [

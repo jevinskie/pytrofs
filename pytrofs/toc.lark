@@ -1,0 +1,59 @@
+// Use with lexer="dynamic_complete"
+
+_TOC_SEP.2: " "
+toc: entry (_TOC_SEP entry)*
+
+_ENTRY_SEP.10: " "
+entry: filename _ENTRY_SEP _entry_parameters
+
+_filename: plain_filename | escaped_filename | braced_filename
+filename: _filename
+
+plain_filename: PLAIN_STR
+NON_SPACE_OPEN_BRACE_SLASH_CHAR: /[^ {\\]/
+NON_SPACE_CLOSE_BRACE_SLASH_CHAR: /[^ }\\]/
+NON_SPACE_SLASH_CHAR: /[^ \\]/
+PLAIN_STR: NON_SPACE_OPEN_BRACE_SLASH_CHAR ( NON_SPACE_SLASH_CHAR* NON_SPACE_CLOSE_BRACE_SLASH_CHAR )*
+
+_BRACED_FNAME_OPEN_BRACE.1: "{"
+_BRACED_FNAME_CLOSE_BRACE.2: "}"
+braced_filename.3: _BRACED_FNAME_OPEN_BRACE NON_BRACE_STR _BRACED_FNAME_CLOSE_BRACE
+NON_BRACE_STR: ANY_CHAR+
+
+escaped_filename: ESCAPED_STR
+NON_SLASH_BRACE_CHAR: /[^\\{}]/
+NON_SLASH_SPACE_BRACE_CHAR: /[^\\{} ]/
+ESCAPED_CHAR: /\\./
+ANY_CHAR: /./
+// ESCAPED_STR_CHAR_BEGIN_OR_END: ESCAPED_CHAR | NON_SLASH_BRACE_CHAR
+ESCAPED_STR_CHAR_BEGIN: ESCAPED_CHAR | NON_SLASH_BRACE_CHAR
+ESCAPED_STR_CHAR_END: ESCAPED_CHAR | NON_SLASH_SPACE_BRACE_CHAR
+
+ESCAPED_STR_CHAR: ESCAPED_CHAR | ANY_CHAR
+// ESCAPED_STR: ESCAPED_STR_CHAR_BEGIN_OR_END (ESCAPED_STR_CHAR* ESCAPED_STR_CHAR_BEGIN_OR_END)*
+ESCAPED_STR: ESCAPED_STR_CHAR_BEGIN (ESCAPED_STR_CHAR* ESCAPED_STR_CHAR_END)*
+
+
+_PARAMS_OPEN_BRACE.100: "{"
+_PARAMS_CLOSE_BRACE.200: "}"
+// _parameters: _PARAMS_OPEN_BRACE _entry_parameters _PARAMS_CLOSE_BRACE
+parameters: _entry_parameters
+
+_entry_parameters.300: file_parameters | dir_parameters | link_parameters
+
+_LENGTH_OFFSET_SEP: " "
+length: INT
+offset: INT
+_length_offset: length _LENGTH_OFFSET_SEP offset
+
+_FILE_TYPE: "F "
+file_parameters: _PARAMS_OPEN_BRACE _FILE_TYPE _length_offset _PARAMS_CLOSE_BRACE
+
+_DIR_TYPE: "D "
+dir_parameters: _PARAMS_OPEN_BRACE _DIR_TYPE _length_offset _PARAMS_CLOSE_BRACE
+
+_LINK_TYPE: "L "
+target: _filename
+link_parameters: _PARAMS_OPEN_BRACE _LINK_TYPE target _PARAMS_CLOSE_BRACE
+
+%import common.INT

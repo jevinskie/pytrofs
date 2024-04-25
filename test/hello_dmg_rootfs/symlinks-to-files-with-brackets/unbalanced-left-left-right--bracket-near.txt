@@ -1,0 +1,1 @@
+../files-with-brackets/i-have-unbalanced-{{}-bracket-near.txt
