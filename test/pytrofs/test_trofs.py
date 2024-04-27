@@ -23,3 +23,4 @@ def test_dec_tcl_str() -> None:
         'i-have-a-newline-\n-and-"-quote.txt',
         36,
     )
+    assert dec_tcl_str(b"{}") == ("", 2)
