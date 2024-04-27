@@ -22,7 +22,7 @@ trofs_footer_sz: Final = len(trofs_signature) + 4
 
 def dec_tcl_str(buf: bytes) -> tuple[str, int]:
     if buf == b"":
-        return "", 0
+        raise ValueError("Can't decode empty buffer")
     dec_buf = bytearray()
     i = 0
     blen = len(buf)

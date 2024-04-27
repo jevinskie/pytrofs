@@ -50,12 +50,12 @@ repos:
   hooks:
   - id: mypy
     args: [--strict]
-    additional_dependencies: [attrs>=23.2.0, lark>=1.1.9, packaging>=23.2, path>=16.14.0, rich>=13.7.1]
+    additional_dependencies: [attrs>=23.2.0, lark>=1.1.9, packaging>=23.2, path>=16.14.0, pytest>=8.1.2, rich>=13.7.1]
 - repo: https://github.com/RobertCraigie/pyright-python
   rev: v1.1.360
   hooks:
   - id: pyright
-    additional_dependencies: [attrs>=23.2.0, lark>=1.1.9, packaging>=23.2, path>=16.14.0, rich>=13.7.1]
+    additional_dependencies: [attrs>=23.2.0, lark>=1.1.9, packaging>=23.2, path>=16.14.0, pytest>=8.1.2, rich>=13.7.1]
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.6.0
   hooks:
