@@ -17,11 +17,29 @@ trofs_signature: Final = b"\x1atrofs01"
 trofs_footer_sz: Final = len(trofs_signature) + 4
 
 
-def decode_tcl_string(buf: bytes) -> tuple[str, int]:
-    return "", 0
+def dec_tcl_str(buf: bytes) -> tuple[str, int]:
+    dec_buf = bytearray()
+    i = 0
+    if buf == b"":
+        return "", 0
+    elif buf[0] == 0x7B:  # b"{"
+        brace_level = 1
+        i += 1
+        while brace_level > 0:
+            b = buf[i]
+            if b == 0x7B:  # b"{"
+                brace_level += 1
+            elif b == 0x7D:  # b"}"
+                brace_level -= 1
+            if brace_level != 0:
+                dec_buf.append(b)
+            i += 1
+        return dec_buf.decode(), i
+    else:
+        return "", 0
 
 
-def encode_tcl_string(s: str) -> bytes:
+def enc_tcl_str(s: str) -> bytes:
     return b""
 
 
@@ -73,10 +91,10 @@ class DirEnt:
     @property
     def enc_sz(self) -> int:
         # 5 = <name><SPACE><OPEN CURLY><TYPE><SPACE><params><CLOSE CURLY>
-        sz = len(encode_tcl_string(self.name)) + 5
+        sz = len(enc_tcl_str(self.name)) + 5
         if self.ty is DirEntType.link:
             assert self.tgt is not None
-            sz += len(encode_tcl_string(self.tgt))
+            sz += len(enc_tcl_str(self.tgt))
         else:
             assert self.sz is not None and self.off is not None
             sz += _num_digits(self.sz) + 1 + _num_digits(self.off)
@@ -84,11 +102,27 @@ class DirEnt:
 
     @property
     def enc_buf(self) -> bytes:
-        return b""
+        if self.ty is DirEntType.link:
+            assert self.tgt is not None
+            return enc_tcl_str(self.name) + b" {L " + enc_tcl_str(self.tgt) + b"}"
+        elif self.ty in (DirEntType.file, DirEntType.directory):
+            assert isinstance(self.ty.value, bytes)
+            return (
+                enc_tcl_str(self.name)
+                + b" {"
+                + self.ty.value
+                + b" "
+                + str(self.sz).encode()
+                + b" "
+                + str(self.off).encode()
+                + b"}"
+            )
+        else:
+            raise ValueError(f"Unknown DirEntType: {self.ty}")
 
     @classmethod
-    def from_buf(cls, buf: bytes) -> Self:
-        return cls("foo.txt", DirEntType.file, sz=42, off=243)
+    def from_buf(cls, buf: bytes) -> tuple[Self, int]:
+        return cls("foo.txt", DirEntType.file, sz=42, off=243), 7
 
 
 @define
@@ -102,14 +136,13 @@ class TOC:
         blen = len(self.buf)
         clen = 0
         while clen < blen:
-            dent = DirEnt.from_buf(self.buf[clen:])
+            dent, enc_sz = DirEnt.from_buf(self.buf[clen:])
             dents.append(dent)
-            clen += dent.enc_sz
+            clen += enc_sz
         return dents
 
     @dirents.setter
     def dirents(self, dents: Iterable[DirEnt]) -> None:
-        # self.buf = b"".join([dent.to_buf() for dent in dents])
         self.buf = b"".join(map(lambda dent: dent.enc_buf, dents))
         pass
 

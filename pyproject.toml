@@ -12,10 +12,10 @@ classifiers = [
 ]
 dependencies = [
   "attrs>=23.2.0",
+  "lark>=1.1.9",
   "packaging>=23.2",
   "path>=16.14.0",
-  "rich>=13.7.0",
-  "lark>=1.1.9"
+  "rich>=13.7.1"
 ]
 description = "Python implementation of Tcl's trofs (Tcl Read-Only FileSystem)"
 dynamic = [
@@ -32,6 +32,17 @@ license = {text = "BSD-2-Clause"}
 name = "pytrofs"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.10.0",
+  "pyright>=1.1.360",
+  "pytest>=8.1.2",
+  "pytest-clarity>=1.0.1",
+  "pytest-cov>=5.0.0",
+  "pytest-randomly>=3.15.0",
+  "pytest-sugar>=1.0.0"
+]
 
 [project.scripts]
 pytrofs-util = "pytrofs.tools.pytrofs_util:main"
