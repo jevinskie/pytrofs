@@ -54,6 +54,9 @@ def dec_tcl_str(buf: bytes) -> tuple[str, int]:
 
 
 def enc_tcl_str(s: str) -> bytes:
+    ilen = len(s)
+    if ilen == 0:
+        return b"{}"
     return b""
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pytrofs.trofs import dec_tcl_str
+from pytrofs.trofs import dec_tcl_str, enc_tcl_str
 
 
 def test_dec_tcl_str() -> None:
@@ -26,3 +26,7 @@ def test_dec_tcl_str() -> None:
     assert dec_tcl_str(b"{}") == ("", 2)
     assert dec_tcl_str(b'{#{a"b}}') == ('#{a"b}', 8)
     assert dec_tcl_str(b'{{a"b}}') == ('{a"b}', 7)
+
+
+def test_enc_tcl_str() -> None:
+    assert enc_tcl_str("") == b"{}"
