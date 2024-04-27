@@ -32,29 +32,29 @@ set fp [list F 42 243]
 
 array set idx {}
 
-set idx($fnospace) $fp
-set idx($fnospacebare) $fp
-set idx($fspace) $fp
-set idx($fquote) $fp
+# set idx($fnospace) $fp
+# set idx($fnospacebare) $fp
+# set idx($fspace) $fp
+# set idx($fquote) $fp
 set idx($fbbraces) $fp
-set idx($fbbracesmobrace) $fp
-set idx($fbbracesmcbrace) $fp
-set idx($fbbracesspace) $fp
-set idx($fmbrace) $fp
-set idx($fmbraces) $fp
-set idx($fsobrace) $fp
-set idx($fscbrace) $fp
-set idx($feobrace) $fp
-set idx($fecbrace) $fp
-set idx($funicode) $fp
-set idx($fbspace) $fp
-set idx($fbspacemobrace) $fp
-set idx($fbspacemcbrace) $fp
-set idx($fespace) $fp
-set idx($fespacemobrace) $fp
-set idx($fespacemcbrace) $fp
-set idx($faspacemobrace) $fp
-set idx($faspacemcbrace) $fp
-set idx($faspacemabrace) $fp
+# set idx($fbbracesmobrace) $fp
+# set idx($fbbracesmcbrace) $fp
+# set idx($fbbracesspace) $fp
+# set idx($fmbrace) $fp
+# set idx($fmbraces) $fp
+# set idx($fsobrace) $fp
+# set idx($fscbrace) $fp
+# set idx($feobrace) $fp
+# set idx($fecbrace) $fp
+# set idx($funicode) $fp
+# set idx($fbspace) $fp
+# set idx($fbspacemobrace) $fp
+# set idx($fbspacemcbrace) $fp
+# set idx($fespace) $fp
+# set idx($fespacemobrace) $fp
+# set idx($fespacemcbrace) $fp
+# set idx($faspacemobrace) $fp
+# set idx($faspacemcbrace) $fp
+# set idx($faspacemabrace) $fp
 
 write [array get idx]
