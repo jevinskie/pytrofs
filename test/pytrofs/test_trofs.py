@@ -24,3 +24,5 @@ def test_dec_tcl_str() -> None:
         36,
     )
     assert dec_tcl_str(b"{}") == ("", 2)
+    assert dec_tcl_str(b'{#{a"b}}') == ('#{a"b}', 8)
+    assert dec_tcl_str(b'{{a"b}}') == ('{a"b}', 7)

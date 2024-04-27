@@ -17,6 +17,9 @@ trofs_signature: Final = b"\x1atrofs01"
 trofs_footer_sz: Final = len(trofs_signature) + 4
 
 
+# Reference tcl/generic/TclUtil.c TclScanElement and TclConvertElement
+
+
 def dec_tcl_str(buf: bytes) -> tuple[str, int]:
     if buf == b"":
         return "", 0

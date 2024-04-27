@@ -38,6 +38,13 @@ set faspacemabrace " hello-{}-world.txt "
 set fnewline "hello\nworld.txt"
 set fnewlinequote "hello-newline-\n-quote-\"-world.txt"
 set fempty ""
+set fhash "#"
+set fhashfirst "#hai"
+set fhashmiddle "hai#2u"
+set fhashend "hai#"
+set fhashbrace "#{a\"b}"
+set fnohashbrace "{a\"b}"
+
 
 array set idx {}
 
@@ -68,6 +75,12 @@ set idx($faspacemabrace) [fp]
 set idx($fnewline) [fp]
 set idx($fnewlinequote) [fp]
 set idx($fempty) [fp]
+set idx($fhash) [fp]
+set idx($fhashfirst) [fp]
+set idx($fhashmiddle) [fp]
+set idx($fhashend) [fp]
+set idx($fhashbrace) [fp]
+set idx($fnohashbrace) [fp]
 
-puts $fnewlinequote
+parray idx
 puts [array get idx]
