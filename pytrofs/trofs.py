@@ -1,8 +1,10 @@
 import io
+import math
 import os
 import re
+from collections.abc import Iterable
 from enum import Enum
-from typing import BinaryIO, Final
+from typing import Any, BinaryIO, Final, Self
 
 from attrs import define, field
 from path import Path
@@ -15,27 +17,104 @@ trofs_signature: Final = b"\x1atrofs01"
 trofs_footer_sz: Final = len(trofs_signature) + 4
 
 
+def decode_tcl_string(buf: bytes) -> tuple[str, int]:
+    return "", 0
+
+
+def encode_tcl_string(s: str) -> bytes:
+    return b""
+
+
 class DirEntType(Enum):
     directory = b"D"
     file = b"F"
     link = b"L"
 
 
+def _is_non_neg(i: Any) -> bool:
+    if not isinstance(i, int):
+        raise ValueError("Can't call is_non_neg on non-int type.")
+    return i >= 0
+
+
+def _num_digits(i: int) -> int:
+    if i == 0:
+        return 1
+    return math.ceil(math.log10(i + 1))
+
+
 @define
 class DirEnt:
+    name: str = field()
     ty: DirEntType = field()
-    tgt: int = field()
-    sz: int | None = field(default=None)
-    off: int | None = field(default=None)
+    tgt: str | None = field(default=None)
+    sz: int | None = field(default=None, converter=_is_non_neg)
+    off: int | None = field(default=None, converter=_is_non_neg)
+
+    def __attrs_post_init__(self) -> None:
+        if self.ty is DirEntType.link:
+            if self.sz is not None or self.off is not None:
+                raise ValueError("Links can't have sz or off set.")
+            if self.tgt is None:
+                raise ValueError("Links must have a tgt.")
+        elif self.ty is DirEntType.file:
+            if self.sz is None or self.off is None:
+                raise ValueError("Files must have have sz and off set.")
+            if self.tgt is None:
+                raise ValueError("Files can't have a tgt.")
+        elif self.ty is DirEntType.directory:
+            if self.sz is None or self.off is None:
+                raise ValueError("Directories must have have sz and off set.")
+            if self.tgt is None:
+                raise ValueError("Directories can't have a tgt.")
+        else:
+            raise ValueError(f"Unknown DirEntType: {self.ty}")
+
+    @property
+    def enc_sz(self) -> int:
+        # 5 = <name><SPACE><OPEN CURLY><TYPE><SPACE><params><CLOSE CURLY>
+        sz = len(encode_tcl_string(self.name)) + 5
+        if self.ty is DirEntType.link:
+            assert self.tgt is not None
+            sz += len(encode_tcl_string(self.tgt))
+        else:
+            assert self.sz is not None and self.off is not None
+            sz += _num_digits(self.sz) + 1 + _num_digits(self.off)
+        return sz
+
+    @property
+    def enc_buf(self) -> bytes:
+        return b""
+
+    @classmethod
+    def from_buf(cls, buf: bytes) -> Self:
+        return cls("foo.txt", DirEntType.file, sz=42, off=243)
 
 
 @define
-class TOCInfo:
+class TOC:
     buf: bytes = field()
     off: int = field()
 
+    @property
+    def dirents(self) -> list[DirEnt]:
+        dents: list[DirEnt] = []
+        blen = len(self.buf)
+        clen = 0
+        while clen < blen:
+            dent = DirEnt.from_buf(self.buf[clen:])
+            dents.append(dent)
+            clen += dent.enc_sz
+        return dents
 
-class RootTOCInfoException(Exception):
+    @dirents.setter
+    def dirents(self, dents: Iterable[DirEnt]) -> None:
+        # self.buf = b"".join([dent.to_buf() for dent in dents])
+        self.buf = b"".join(map(lambda dent: dent.enc_buf, dents))
+        pass
+
+
+class RootTOCException(Exception):
     def __init__(
         self,
         not_enough_footer_bytes: bool = False,
@@ -66,7 +145,7 @@ _toc_re = re.compile(
 )
 
 
-def extract_dir(ar_fh: BinaryIO, toc_info: TOCInfo, directory: str | Path) -> None:
+def extract_dir(ar_fh: BinaryIO, toc_info: TOC, directory: str | Path) -> None:
     directory = Path(directory)
     dirents = {}
     for m in _toc_re.finditer(toc_info.buf):
@@ -98,7 +177,7 @@ def extract_dir(ar_fh: BinaryIO, toc_info: TOCInfo, directory: str | Path) -> No
             assert off3 is not None
             ar_fh.seek(off3, io.SEEK_SET)
             assert dirent["sz"] is not None and isinstance(dirent["sz"], int)
-            child_toc_info = TOCInfo(ar_fh.read(dirent["sz"]), off3)
+            child_toc_info = TOC(ar_fh.read(dirent["sz"]), off3)
             # print(f"child '{name}' off: {off} toc: {child_toc_buf}")
             os.makedirs(path, exist_ok=True)
             extract_dir(ar_fh, child_toc_info, path)
@@ -114,17 +193,17 @@ def is_trofs_signature(footer: bytes) -> bool:
     return footer[: len(trofs_signature)] == trofs_signature
 
 
-def get_trofs_root_toc_info(ar_fh: BinaryIO) -> TOCInfo:
+def get_trofs_root_toc_info(ar_fh: BinaryIO) -> TOC:
     orig_pos = ar_fh.tell()
     try:
         ar_fh.seek(-trofs_footer_sz, io.SEEK_END)
         footer = ar_fh.read(trofs_footer_sz)
     except Exception:
         ar_fh.seek(orig_pos, io.SEEK_SET)
-        raise RootTOCInfoException(not_enough_footer_bytes=True)
+        raise RootTOCException(not_enough_footer_bytes=True)
     if not is_trofs_signature(footer):
         ar_fh.seek(orig_pos, io.SEEK_SET)
-        raise RootTOCInfoException(bad_signature=footer[: len(trofs_signature)])
+        raise RootTOCException(bad_signature=footer[: len(trofs_signature)])
     root_toc_sz = int.from_bytes(footer[-4:], "big")
     try:
         ar_fh.seek(-trofs_footer_sz - root_toc_sz, io.SEEK_END)
@@ -132,9 +211,9 @@ def get_trofs_root_toc_info(ar_fh: BinaryIO) -> TOCInfo:
         root_toc_buf = ar_fh.read(root_toc_sz)
     except Exception:
         ar_fh.seek(orig_pos, io.SEEK_SET)
-        raise RootTOCInfoException(not_enough_toc_bytes=root_toc_sz)
+        raise RootTOCException(not_enough_toc_bytes=root_toc_sz)
     ar_fh.seek(orig_pos, io.SEEK_SET)
-    return TOCInfo(root_toc_buf, root_toc_off)
+    return TOC(root_toc_buf, root_toc_off)
 
 
 def extract(archive: str | Path, directory: str | Path) -> None:
@@ -143,7 +222,7 @@ def extract(archive: str | Path, directory: str | Path) -> None:
     with open(archive, "rb") as ar_fh:
         try:
             root_toc_info = get_trofs_root_toc_info(ar_fh)
-        except RootTOCInfoException as e:
+        except RootTOCException as e:
             raise ValueError(f"File '{archive}' is not a valid trofs archive. Exception:\n{e}")
         os.makedirs(directory, exist_ok=True)
         extract_dir(ar_fh, root_toc_info, directory)
