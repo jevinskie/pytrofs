@@ -50,6 +50,9 @@ pytrofs-util = "pytrofs.tools.pytrofs_util:main"
 [project.urls]
 repository = "https://github.com/jevinskie/pytrofs"
 
+[pytest]
+testpaths = "test"
+
 [tool.mypy]
 strict = true
 

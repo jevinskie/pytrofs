@@ -18,25 +18,36 @@ trofs_footer_sz: Final = len(trofs_signature) + 4
 
 
 def dec_tcl_str(buf: bytes) -> tuple[str, int]:
-    dec_buf = bytearray()
-    i = 0
     if buf == b"":
         return "", 0
-    elif buf[0] == 0x7B:  # b"{"
+    dec_buf = bytearray()
+    i = 0
+    blen = len(buf)
+    b = buf[0]
+    if b == 0x7B:  # {
         brace_level = 1
         i += 1
         while brace_level > 0:
             b = buf[i]
-            if b == 0x7B:  # b"{"
+            if b == 0x7B:  # {
                 brace_level += 1
-            elif b == 0x7D:  # b"}"
+            elif b == 0x7D:  # }
                 brace_level -= 1
             if brace_level != 0:
                 dec_buf.append(b)
             i += 1
-        return dec_buf.decode(), i
     else:
-        return "", 0
+        while b != 0x20:  # ' '
+            if b == 0x5C:  # \
+                i += 1
+                b = buf[i]
+            dec_buf.append(b)
+            i += 1
+            if i < blen:
+                b = buf[i]
+            else:
+                break
+    return dec_buf.decode(), i
 
 
 def enc_tcl_str(s: str) -> bytes:
