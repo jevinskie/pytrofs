@@ -27,6 +27,7 @@ set faspacemobrace " hello-{-world.txt "
 set faspacemcbrace " hello-}-world.txt "
 set faspacemabrace " hello-{}-world.txt "
 set fnewline "hello\nworld.txt"
+set fnewlinequote "hello-newline-\n-quote-\"-world.txt"
 
 
 set fp [list F 42 243]
@@ -57,7 +58,8 @@ array set idx {}
 # set idx($faspacemobrace) $fp
 # set idx($faspacemcbrace) $fp
 # set idx($faspacemabrace) $fp
-set idx($fnewline) $fp
+# set idx($fnewline) $fp
+set idx($fnewlinequote) $fp
 
-puts $fnewline
+puts $fnewlinequote
 puts [array get idx]

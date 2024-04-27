@@ -19,3 +19,7 @@ def test_dec_tcl_str() -> None:
     assert dec_tcl_str(b'hello-\\"-world.txt') == ('hello-"-world.txt', 18)
     assert dec_tcl_str(b'hello-\\"-world.txt ') == ('hello-"-world.txt', 18)
     assert dec_tcl_str(b"{i-have-a-newline\n-end.txt}") == ("i-have-a-newline\n-end.txt", 27)
+    assert dec_tcl_str(b'{i-have-a-newline-\n-and-"-quote.txt}') == (
+        'i-have-a-newline-\n-and-"-quote.txt',
+        36,
+    )
