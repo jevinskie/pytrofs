@@ -34,7 +34,6 @@ array set fnames {}
 proc add_fname {id {name}} {
     upvar fnames local_fnames
     set local_fnames($id) $name
-    parray local_fnames
 }
 
 add_fname fnospace "hello-world.txt"
@@ -75,54 +74,12 @@ puts "fnames begin:"
 parray fnames
 puts "fnames end"
 
-# # add_fname k ""
-# # set v ""
-# array for {{k} {v}} fnames {
-#     puts "fnames\[$k\] = $v"
-# }
-
-# puts "fnames: [dict get fnames]"
-
-set fnospace "hello-world.txt"
-set fnospacebare hello-world.txt
-set fspace "hello world.txt"
-set fquote "hello-\"-world.txt"
-set fbbraces "{hello-world.txt}"
-set fbbracesmobrace "{hello-{-world.txt}"
-set fbbracesmcbrace "{hello-{-world.txt}"
-set fbbracesspace "{hello world.txt}"
-set fmbrace "hello-{-world.txt"
-set fmbraces "hello-{}-world.txt"
-set fsobrace "{hello-world.txt"
-set fscbrace "}hello-world.txt"
-set feobrace "hello-world.txt{"
-set fecbrace "hello-world.txt}"
-set funicode "ä-\"-b.txt"
-set fbspace " hello-world.txt"
-set fbspacemobrace " hello-{-world.txt"
-set fbspacemcbrace " hello-}-world.txt"
-set fespace "hello-world.txt "
-set fespacemobrace "hello-{-world.txt "
-set fespacemcbrace "hello-}-world.txt "
-set faspacemobrace " hello-{-world.txt "
-set faspacemcbrace " hello-}-world.txt "
-set faspacemabrace " hello-{}-world.txt "
-set fnewline "hello\nworld.txt"
-set fnewlinequote "hello-newline-\n-quote-\"-world.txt"
-set fempty ""
-set fhash "#"
-set fhashfirst "#hai"
-set fhashmiddle "hai#2u"
-set fhashend "hai#"
-set fhashbrace "#{a\"b}"
-set fnohashbrace "{a\"b}"
-
 array set toc {}
 
 foreach {k v} [array get fnames] {
     set fp_info [fp]
     set toc($v) [fp]
-    puts "symlink: [expr [lindex $fp_info 1]]-symlink -> $v"
+    puts "symlink: [expr [lindex $fp_info 2]]-symlink -> $v"
     set toc("[expr [lindex $fp_info 2]]-symlink") [lp $v]
 }
 
