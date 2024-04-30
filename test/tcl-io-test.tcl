@@ -71,7 +71,7 @@ array set toc {}
 
 foreach {k v} [array get fnames] {
     set fp_info [fp]
-    set toc($v) [fp]
+    set toc($v) $fp_info
     puts "symlink: [expr [lindex $fp_info 2]]-symlink -> $v"
     set toc("[expr [lindex $fp_info 2]]-symlink") [lp $v]
 }
