@@ -2,6 +2,9 @@
 
 interp alias {} write {} puts -nonewline
 
+set dirname [file dirname [info script]]
+set test_toc_fname [file join $dirname test-toc.toc]
+file delete $test_toc_fname
 
 proc intgen {{i 0}} {
     proc intgen "{i [incr i]}" [info body intgen]
@@ -114,42 +117,24 @@ set fhashend "hai#"
 set fhashbrace "#{a\"b}"
 set fnohashbrace "{a\"b}"
 
+array set toc {}
 
-array set idx {}
+foreach {k v} [array get fnames] {
+    set fp_info [fp]
+    set toc($v) [fp]
+    puts "symlink: [expr [lindex $fp_info 1]]-symlink -> $v"
+    set toc("[expr [lindex $fp_info 2]]-symlink") [lp $v]
+}
 
-set idx($fnospace) [fp]
-set idx($fnospacebare) [fp]
-set idx($fspace) [fp]
-set idx($fquote) [fp]
-set idx($fbbraces) [fp]
-set idx($fbbracesmobrace) [fp]
-set idx($fbbracesmcbrace) [fp]
-set idx($fbbracesspace) [fp]
-set idx($fmbrace) [fp]
-set idx($fmbraces) [fp]
-set idx($fsobrace) [fp]
-set idx($fscbrace) [fp]
-set idx($feobrace) [fp]
-set idx($fecbrace) [fp]
-set idx($funicode) [fp]
-set idx($fbspace) [fp]
-set idx($fbspacemobrace) [fp]
-set idx($fbspacemcbrace) [fp]
-set idx($fespace) [fp]
-set idx($fespacemobrace) [fp]
-set idx($fespacemcbrace) [fp]
-set idx($faspacemobrace) [fp]
-set idx($faspacemcbrace) [fp]
-set idx($faspacemabrace) [fp]
-set idx($fnewline) [fp]
-set idx($fnewlinequote) [fp]
-set idx($fempty) [fp]
-set idx($fhash) [fp]
-set idx($fhashfirst) [fp]
-set idx($fhashmiddle) [fp]
-set idx($fhashend) [fp]
-set idx($fhashbrace) [fp]
-set idx($fnohashbrace) [fp]
+parray toc
+puts [array get toc]
 
-parray idx
-puts [array get idx]
+set ftoc [open $test_toc_fname w]
+fconfigure $ftoc -encoding binary
+write $ftoc \u001A
+fconfigure $ftoc -encoding utf-8
+write $ftoc [array get toc]
+fconfigure $ftoc -translation binary
+write $ftoc \u001A
+write $ftoc [binary format I 0xDEADBEEF]
+close $ftoc
