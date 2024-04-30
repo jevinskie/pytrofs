@@ -6,24 +6,17 @@ set dirname [file dirname [info script]]
 set test_toc_fname [file join $dirname test-toc.toc]
 file delete $test_toc_fname
 
-proc intgen {{i 0}} {
-    proc intgen "{i [incr i]}" [info body intgen]
-    return $i
-}
-
 proc gen_intgen {name} {
-    proc "${name}_intgen" {{i -1}} {
+    proc "${name}_intgen" {{i 0}} {
         proc [dict get [info frame 0] proc] "{i [incr i]}" [info body [dict get [info frame 0] proc]]
         return $i
     }
 }
 
-gen_intgen off_gen
-gen_intgen jgen
-
+gen_intgen off
 
 proc fp {} {
-    return [list F 1 [intgen]]
+    return [list F 1 [off_intgen]]
 }
 proc lp {tgt} {
     return [list L $tgt]
