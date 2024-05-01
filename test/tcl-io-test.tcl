@@ -14,66 +14,106 @@ proc gen_intgen {name} {
 }
 
 gen_intgen off
+gen_intgen fidx
 
-proc fp {} {
-    return [list F 1 [off_intgen]]
+array set fnames {}
+
+proc add_f {fid name} {
+    upvar fnames fnames
+    set fnames($fid) [list $name [fidx_intgen]]
 }
+
+proc get_fid_and_fname_by_fidx {fidx} {
+    upvar fnames fnames
+    foreach {fid v} [array get fnames] {
+        set cur_fname [lindex $v 0]
+        set cur_fidx [lindex $v 1]
+        if [expr $fidx == $cur_fidx] {
+            return [list $fid $cur_fname]
+        }
+    }
+    return -1
+}
+
+add_f fnospace "hello-world.txt"
+add_f fnospacebare hello-world.txt
+add_f fspace "hello world.txt"
+add_f fquote "hello-\"-world.txt"
+add_f fbbraces "{hello-world.txt}"
+add_f fbbracesmobrace "{hello-{-world.txt}"
+add_f fbbracesmcbrace "{hello-{-world.txt}"
+add_f fbbracesspace "{hello world.txt}"
+add_f fmbrace "hello-{-world.txt"
+add_f fmbraces "hello-{}-world.txt"
+add_f fsobrace "{hello-world.txt"
+add_f fscbrace "}hello-world.txt"
+add_f feobrace "hello-world.txt{"
+add_f fecbrace "hello-world.txt}"
+add_f funicode "ä-\"-b.txt"
+add_f fbspace " hello-world.txt"
+add_f fbspacemobrace " hello-{-world.txt"
+add_f fbspacemcbrace " hello-}-world.txt"
+add_f fespace "hello-world.txt "
+add_f fespacemobrace "hello-{-world.txt "
+add_f fespacemcbrace "hello-}-world.txt "
+add_f faspacemobrace " hello-{-world.txt "
+add_f faspacemcbrace " hello-}-world.txt "
+add_f faspacemabrace " hello-{}-world.txt "
+add_f fnewline "hello\nworld.txt"
+add_f fnewlinequote "hello-newline-\n-quote-\"-world.txt"
+add_f fempty ""
+add_f fhash "#"
+add_f fhashfirst "#hai"
+add_f fhashmiddle "hai#2u"
+add_f fhashend "hai#"
+add_f fhashbrace "#{a\"b}"
+add_f fnohashbrace "{a\"b}"
+
+array set fcontents {}
+foreach {fid v} [array get fnames] {
+    set cur_fname [lindex $v 0]
+    set cur_fidx [lindex $v 1]
+    set fcontents($fid) "contents of fid: $fid fname: $cur_fname fidx: $cur_fidx\n"
+}
+
+parray fcontents
+
+proc get_content_for_fid {fid} {
+    upvar fcontents fcontents
+    return $fcontents($fid)
+}
+
+set first_fidx 1
+set last_fidx [expr [fidx_intgen] - 1]
+set num_fidx [expr $last_fidx - $first_fidx]
+
+set content ""
+set cur_off 1
+for {set fidx $first_fidx} {$fidx < $last_fidx} {incr fidx} {
+    set fid [lindex [get_fid_and_fname_by_fidx $fidx] 0]
+    set content "$content[get_content_for_fid $fid]"
+}
+
+proc fp {fid} {
+    upvar fcontents fcontents
+    set content [get_content_for_fid $fid]
+    set len [string length [encoding convertto utf-8 $content]]
+    return [list F $len [off_intgen]]
+}
+
 proc lp {tgt} {
     return [list L $tgt]
 }
 
-array set fnames {}
-
-proc add_fname {id {name}} {
-    upvar fnames local_fnames
-    set local_fnames($id) $name
-}
-
-add_fname fnospace "hello-world.txt"
-add_fname fnospacebare hello-world.txt
-add_fname fspace "hello world.txt"
-add_fname fquote "hello-\"-world.txt"
-add_fname fbbraces "{hello-world.txt}"
-add_fname fbbracesmobrace "{hello-{-world.txt}"
-add_fname fbbracesmcbrace "{hello-{-world.txt}"
-add_fname fbbracesspace "{hello world.txt}"
-add_fname fmbrace "hello-{-world.txt"
-add_fname fmbraces "hello-{}-world.txt"
-add_fname fsobrace "{hello-world.txt"
-add_fname fscbrace "}hello-world.txt"
-add_fname feobrace "hello-world.txt{"
-add_fname fecbrace "hello-world.txt}"
-add_fname funicode "ä-\"-b.txt"
-add_fname fbspace " hello-world.txt"
-add_fname fbspacemobrace " hello-{-world.txt"
-add_fname fbspacemcbrace " hello-}-world.txt"
-add_fname fespace "hello-world.txt "
-add_fname fespacemobrace "hello-{-world.txt "
-add_fname fespacemcbrace "hello-}-world.txt "
-add_fname faspacemobrace " hello-{-world.txt "
-add_fname faspacemcbrace " hello-}-world.txt "
-add_fname faspacemabrace " hello-{}-world.txt "
-add_fname fnewline "hello\nworld.txt"
-add_fname fnewlinequote "hello-newline-\n-quote-\"-world.txt"
-add_fname fempty ""
-add_fname fhash "#"
-add_fname fhashfirst "#hai"
-add_fname fhashmiddle "hai#2u"
-add_fname fhashend "hai#"
-add_fname fhashbrace "#{a\"b}"
-add_fname fnohashbrace "{a\"b}"
-
-puts "fnames begin:"
-parray fnames
-puts "fnames end"
-
 array set toc {}
 
-foreach {k v} [array get fnames] {
-    set fp_info [fp]
-    set toc($v) $fp_info
-    puts "symlink: [expr [lindex $fp_info 2]]-symlink -> $v"
-    set toc("[expr [lindex $fp_info 2]]-symlink") [lp $v]
+foreach {fid finfo} [array get fnames] {
+    set fname [lindex $finfo 0]
+    set fidx [lindex $finfo 1]
+    puts "pee fid: $fid fname $fname"
+    set toc($fname) [fp $fid]
+    set symlink_name "$fname-symlink"
+    set toc($symlink_name) [lp $fname]
 }
 
 parray toc
@@ -83,8 +123,8 @@ set ftoc [open $test_toc_fname w]
 fconfigure $ftoc -encoding binary
 write $ftoc \u001A
 fconfigure $ftoc -encoding utf-8
+write $ftoc $content
 write $ftoc [array get toc]
 fconfigure $ftoc -translation binary
-write $ftoc \u001A
 write $ftoc [binary format I 0xDEADBEEF]
 close $ftoc

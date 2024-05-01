@@ -1,5 +1,41 @@
-{} {F 1 32} {"8-symlink"} {L ä-\"-b.txt} {"1-symlink"} {L {hello
-world.txt}} hello-world.txt\{ {F 1 15} hello-world.txt\} {F 1 26} {{a"b}} {F 1 27} {"33-symlink"} {L hello-world.txt} {"25-symlink"} {L {hello world.txt}} {"17-symlink"} {L hello-\{-world.txt\ } {"9-symlink"} {L \{hello-\{-world.txt\}} {"10-symlink"} {L \{hello-world.txt} \ hello-\}-world.txt\  {F 1 16} {"2-symlink"} {L hello-\{-world.txt} hello-{}-world.txt {F 1 5} hello-world.txt {F 1 33} {"26-symlink"} {L hello-world.txt\}} {"18-symlink"} {L {{hello-world.txt}}} {"11-symlink"} {L {hello-newline-
--quote-"-world.txt}} {"3-symlink"} {L \{hello-\{-world.txt\}} {hello
-world.txt} {F 1 1} \ hello-\{-world.txt\  {F 1 6} {"27-symlink"} {L {{a"b}}} {"19-symlink"} {L hai#} {"20-symlink"} {L hai#2u} {hello world.txt} {F 1 25} {"12-symlink"} {L { hello-{}-world.txt }} {"4-symlink"} {L #} hello-\{-world.txt {F 1 2} #{a\"b} {F 1 13} \ hello-\}-world.txt {F 1 21} {{hello world.txt}} {F 1 31} {"28-symlink"} {L hello-\}-world.txt\ } # {F 1 4} {"21-symlink"} {L \ hello-\}-world.txt} {"13-symlink"} {L #{a\"b}} \}hello-world.txt {F 1 23} {"5-symlink"} {L hello-{}-world.txt} #hai {F 1 24} {hello-world.txt } {F 1 14} hello-\}-world.txt\  {F 1 28} {"30-symlink"} {L hello-\"-world.txt} {"29-symlink"} {L { hello-world.txt}} { hello-{}-world.txt } {F 1 12} {"22-symlink"} {L hello-world.txt} {"14-symlink"} {L {hello-world.txt }} hai# {F 1 19} {"6-symlink"} {L \ hello-\{-world.txt\ } { hello-world.txt} {F 1 29} {hello-newline-
--quote-"-world.txt} {F 1 11} \{hello-world.txt {F 1 10} {"31-symlink"} {L {{hello world.txt}}} hai#2u {F 1 20} {"23-symlink"} {L \}hello-world.txt} hello-\"-world.txt {F 1 30} {"15-symlink"} {L hello-world.txt\{} {"7-symlink"} {L \ hello-\{-world.txt} hello-\{-world.txt\  {F 1 17} ä-\"-b.txt {F 1 8} {"32-symlink"} {L {}} {"24-symlink"} {L #hai} \{hello-\{-world.txt\} {F 1 9} \ hello-\{-world.txt {F 1 7} {"16-symlink"} {L \ hello-\}-world.txt\ } {{hello-world.txt}} {F 1 18}ޭ��
+contents of fid: fnospace fname: hello-world.txt fidx: 1
+contents of fid: fnospacebare fname: hello-world.txt fidx: 2
+contents of fid: fspace fname: hello world.txt fidx: 3
+contents of fid: fquote fname: hello-"-world.txt fidx: 4
+contents of fid: fbbraces fname: {hello-world.txt} fidx: 5
+contents of fid: fbbracesmobrace fname: {hello-{-world.txt} fidx: 6
+contents of fid: fbbracesmcbrace fname: {hello-{-world.txt} fidx: 7
+contents of fid: fbbracesspace fname: {hello world.txt} fidx: 8
+contents of fid: fmbrace fname: hello-{-world.txt fidx: 9
+contents of fid: fmbraces fname: hello-{}-world.txt fidx: 10
+contents of fid: fsobrace fname: {hello-world.txt fidx: 11
+contents of fid: fscbrace fname: }hello-world.txt fidx: 12
+contents of fid: feobrace fname: hello-world.txt{ fidx: 13
+contents of fid: fecbrace fname: hello-world.txt} fidx: 14
+contents of fid: funicode fname: ä-"-b.txt fidx: 15
+contents of fid: fbspace fname:  hello-world.txt fidx: 16
+contents of fid: fbspacemobrace fname:  hello-{-world.txt fidx: 17
+contents of fid: fbspacemcbrace fname:  hello-}-world.txt fidx: 18
+contents of fid: fespace fname: hello-world.txt  fidx: 19
+contents of fid: fespacemobrace fname: hello-{-world.txt  fidx: 20
+contents of fid: fespacemcbrace fname: hello-}-world.txt  fidx: 21
+contents of fid: faspacemobrace fname:  hello-{-world.txt  fidx: 22
+contents of fid: faspacemcbrace fname:  hello-}-world.txt  fidx: 23
+contents of fid: faspacemabrace fname:  hello-{}-world.txt  fidx: 24
+contents of fid: fnewline fname: hello
+world.txt fidx: 25
+contents of fid: fnewlinequote fname: hello-newline-
+-quote-"-world.txt fidx: 26
+contents of fid: fempty fname:  fidx: 27
+contents of fid: fhash fname: # fidx: 28
+contents of fid: fhashfirst fname: #hai fidx: 29
+contents of fid: fhashmiddle fname: hai#2u fidx: 30
+contents of fid: fhashend fname: hai# fidx: 31
+contents of fid: fhashbrace fname: #{a"b} fidx: 32
+{} {F 41 32} hello-world.txt\{ {F 59 15} \{hello-\{-world.txt\}-symlink {L \{hello-\{-world.txt\}} \ hello-\{-world.txt-symlink {L \ hello-\{-world.txt} {{hello-world.txt}-symlink} {L {{hello-world.txt}}} -symlink {L {}} hello-world.txt\} {F 59 26} {{a"b}} {F 52 27} hello-world.txt\{-symlink {L hello-world.txt\{} hello-world.txt\}-symlink {L hello-world.txt\}} {{a"b}-symlink} {L {{a"b}}} \ hello-\}-world.txt\  {F 68 16} hello-{}-world.txt {F 61 5} \ hello-\}-world.txt\ -symlink {L \ hello-\}-world.txt\ } hello-world.txt {F 57 33} hello-{}-world.txt-symlink {L hello-{}-world.txt} hello-world.txt-symlink {L hello-world.txt} {hello
+world.txt} {F 58 1} \ hello-\{-world.txt\  {F 68 6} {hello
+world.txt-symlink} {L {hello
+world.txt}} {hello world.txt} {F 55 25} \ hello-\{-world.txt\ -symlink {L \ hello-\{-world.txt\ } {hello world.txt-symlink} {L {hello world.txt}} hello-\{-world.txt {F 58 2} #{a\"b} {F 51 13} \ hello-\}-world.txt {F 67 21} {{hello world.txt}} {F 64 31} # {F 41 4} hello-\{-world.txt-symlink {L hello-\{-world.txt} #{a\"b}-symlink {L #{a\"b}} \}hello-world.txt {F 59 23} \ hello-\}-world.txt-symlink {L \ hello-\}-world.txt} #hai {F 49 24} {{hello world.txt}-symlink} {L {{hello world.txt}}} #-symlink {L #} {hello-world.txt } {F 58 14} \}hello-world.txt-symlink {L \}hello-world.txt} hello-\}-world.txt\  {F 67 28} #hai-symlink {L #hai} {hello-world.txt -symlink} {L {hello-world.txt }} { hello-{}-world.txt } {F 69 12} hello-\}-world.txt\ -symlink {L hello-\}-world.txt\ } hai# {F 47 19} { hello-world.txt} {F 58 29} {hello-newline-
+-quote-"-world.txt} {F 81 11} { hello-{}-world.txt -symlink} {L { hello-{}-world.txt }} hai#-symlink {L hai#} \{hello-world.txt {F 59 10} { hello-world.txt-symlink} {L { hello-world.txt}} {hello-newline-
+-quote-"-world.txt-symlink} {L {hello-newline-
+-quote-"-world.txt}} hai#2u {F 52 20} hello-\"-world.txt {F 57 30} \{hello-world.txt-symlink {L \{hello-world.txt} hello-\{-world.txt\  {F 67 17} hai#2u-symlink {L hai#2u} hello-\"-world.txt-symlink {L hello-\"-world.txt} ä-\"-b.txt {F 53 8} hello-\{-world.txt\ -symlink {L hello-\{-world.txt\ } \{hello-\{-world.txt\} {F 68 9} \ hello-\{-world.txt {F 67 7} ä-\"-b.txt-symlink {L ä-\"-b.txt} {{hello-world.txt}} {F 59 18}ޭ��
